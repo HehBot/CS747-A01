@@ -86,10 +86,10 @@ def task2(algorithm, horizon, p1s, p2s, num_sims=50):
 
 
 if __name__ == "__main__":
-    # EXAMPLE CODE
-    task2p1s = [0.2, 0.3]
-    task2p2s = [0.1, 0.2]
-    regrets = task2(Eps_Greedy, 1000, task2p1s, task2p2s, 1)
-    print(regrets)
-    # INSERT YOUR CODE FOR PLOTTING HERE
-    pass
+    # part A
+    task2p1s = [0.9 for i in range(19)]
+    task2p2s = [0.05 * i for i in range(19)]
+    regrets = task2(UCB, 30000, task2p1s, task2p2s)
+    fig, ax = plt.subplots()
+    ax.plot(task2p2s, regrets)
+    fig.savefig("task2A.png", format="png")
