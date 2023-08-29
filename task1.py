@@ -72,16 +72,29 @@ class UCB(Algorithm):
     def __init__(self, num_arms, horizon):
         super().__init__(num_arms, horizon)
         # START EDITING HERE
+        self.counts = np.zeros(num_arms)
+        self.values = np.zeros(num_arms)
+        self.time = 0
         # END EDITING HERE
 
     def give_pull(self):
         # START EDITING HERE
-        raise NotImplementedError
+        if self.time < self.num_arms:
+            return self.time
+        else:
+            return np.argmax(
+                self.values + np.sqrt(2 * math.log(self.time) / self.counts)
+            )
         # END EDITING HERE
 
     def get_reward(self, arm_index, reward):
         # START EDITING HERE
-        raise NotImplementedError
+        self.counts[arm_index] += 1
+        self.time += 1
+        n = self.counts[arm_index]
+        value = self.values[arm_index]
+        new_value = ((n - 1) / n) * value + (1 / n) * reward
+        self.values[arm_index] = new_value
         # END EDITING HERE
 
 
