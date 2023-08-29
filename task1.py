@@ -65,6 +65,33 @@ class Eps_Greedy(Algorithm):
 
 # START EDITING HERE
 # You can use this space to define any helper functions that you need
+def KL(p, q):
+    if p == 0:
+        return -math.log(1 - q)
+    elif p == 1:
+        return -math.log(q)
+    return p * math.log(p / q) + (1 - p) * math.log((1 - p) / (1 - q))
+
+
+def KL_inv(p, z):
+    """
+    returns q in [p, 1) st
+        KL(p, q) = z
+    computed using binary search
+    """
+    s_e = 1e-2
+    r = 1
+    l = p
+    while (r - l) > s_e:
+        v = KL(p, (l + r) / 2) - z
+        if v > 0:
+            r = (l + r) / 2
+        else:
+            l = (l + r) / 2
+    return l
+
+
+np_KL_inv = np.vectorize(KL_inv)
 # END EDITING HERE
 
 
@@ -103,17 +130,30 @@ class KL_UCB(Algorithm):
         super().__init__(num_arms, horizon)
         # You can add any other variables you need here
         # START EDITING HERE
-
+        self.counts = np.zeros(num_arms)
+        self.values = np.zeros(num_arms)
+        self.time = 0
+        self.c = 4
         # END EDITING HERE
 
     def give_pull(self):
         # START EDITING HERE
-        raise NotImplementedError
+        if self.time < self.num_arms:
+            return self.time
+        else:
+            l = math.log(self.time)
+            l = l + self.c * math.log(l)
+            return np.argmax(np_KL_inv(self.values, l / self.counts))
         # END EDITING HERE
 
     def get_reward(self, arm_index, reward):
         # START EDITING HERE
-        raise NotImplementedError
+        self.counts[arm_index] += 1
+        self.time += 1
+        n = self.counts[arm_index]
+        value = self.values[arm_index]
+        new_value = ((n - 1) / n) * value + (1 / n) * reward
+        self.values[arm_index] = new_value
         # END EDITING HERE
 
 
@@ -122,15 +162,17 @@ class Thompson_Sampling(Algorithm):
         super().__init__(num_arms, horizon)
         # You can add any other variables you need here
         # START EDITING HERE
-
+        self.successes_p_1 = np.ones(num_arms)
+        self.failures_p_1 = np.ones(num_arms)
         # END EDITING HERE
 
     def give_pull(self):
         # START EDITING HERE
-        raise NotImplementedError
+        return np.argmax(np.random.beta(self.successes_p_1, self.failures_p_1))
         # END EDITING HERE
 
     def get_reward(self, arm_index, reward):
         # START EDITING HERE
-        raise NotImplementedError
+        self.successes_p_1[arm_index] += reward
+        self.failures_p_1[arm_index] += 1 - reward
         # END EDITING HERE
