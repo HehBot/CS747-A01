@@ -91,5 +91,23 @@ if __name__ == "__main__":
     task2p2s = [0.05 * i for i in range(19)]
     regrets = task2(UCB, 30000, task2p1s, task2p2s)
     fig, ax = plt.subplots()
-    ax.plot(task2p2s, regrets)
-    fig.savefig("task2A.png", format="png")
+    ax.set_xlabel(r"$p_2$")
+    ax.set_ylabel("Regret")
+    ax.plot(task2p2s, regrets, color="blue", label="UCB")
+    ax.legend()
+    ax.set_title("Task 2A")
+    fig.savefig("task2A.svg", format="svg")
+
+    # part B
+    task2p1s = [0.1 + 0.05 * i for i in range(19)]
+    task2p2s = [0.05 * i for i in range(19)]
+    regrets_UCB = task2(UCB, 30000, task2p1s, task2p2s)
+    regrets_KL_UCB = task2(KL_UCB, 30000, task2p1s, task2p2s)
+    fig, ax = plt.subplots()
+    ax.set_xlabel(r"$p_2$")
+    ax.set_ylabel("Regret")
+    ax.plot(task2p2s, regrets_UCB, color="blue", label="UCB")
+    ax.plot(task2p2s, regrets_KL_UCB, color="red", label="KL UCB")
+    ax.legend()
+    ax.set_title("Task 2B")
+    fig.savefig("task2B.svg", format="svg")

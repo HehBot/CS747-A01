@@ -133,7 +133,7 @@ class KL_UCB(Algorithm):
         self.counts = np.zeros(num_arms)
         self.values = np.zeros(num_arms)
         self.time = 0
-        self.c = 4
+        self.c = 0
         # END EDITING HERE
 
     def give_pull(self):
