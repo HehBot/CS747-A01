@@ -32,15 +32,17 @@ class FaultyBanditsAlgo:
         self.horizon = horizon
         self.fault = fault  # probability that the bandit returns a faulty pull
         # START EDITING HERE
-
+        self.successes_p_1 = np.ones(num_arms)
+        self.failures_p_1 = np.ones(num_arms)
         # END EDITING HERE
 
     def give_pull(self):
         # START EDITING HERE
-        raise NotImplementedError
+        return np.argmax(np.random.beta(self.successes_p_1, self.failures_p_1))
         # END EDITING HERE
 
     def get_reward(self, arm_index, reward):
         # START EDITING HERE
-        raise NotImplementedError
+        self.successes_p_1[arm_index] += reward
+        self.failures_p_1[arm_index] += 1 - reward
         # END EDITING HERE
