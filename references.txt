@@ -1,0 +1,2 @@
+ - KL-UCB paper
+   - For setting $c = 0$ in the KL-UCB algorithm as opposed to 3

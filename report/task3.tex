@@ -1,0 +1,46 @@
+\section*{Task 3}
+
+For r.v. $W$ (taking values in $\Omega$) that represents the environment, we have the generalised belief update equation
+\begin{align*}
+    \mathcal{P}_W^{t + 1}(w) = \dfrac{\mathcal{P}_W^{t}(w)\mathbb{P}(e_{t+1} | w)}{\int_\Omega\mathcal{P}_W^{t}(\lambda)\mathbb{P}(e_{t+1} | \lambda)\dd\lambda}
+\end{align*}
+
+In this case, the environment is the (unknown) expected reward of a particular bandit arm and $\Omega=[0,1]$.
+\begin{align*}
+    \mathbb{P}(e_{t + 1} | w) &= \begin{cases}
+        p\cdot w + (1 - p)\left(\dfrac{1}{2}\cdot 1 + \dfrac{1}{2}\cdot 0\right) & e_{t+1} = 1 \\
+        p(1 - w) + (1 - p)\left(\dfrac{1}{2}\cdot 0 + \dfrac{1}{2}\cdot 1\right) & e_{t+1} = 0
+    \end{cases} \\
+    \mathbb{P}(e_{t + 1} | w) &= \begin{cases}
+        pw + \dfrac{1 - p}{2} & e_{t+1} = 1 \\
+        1 - \left(pw + \dfrac{1 - p}{2}\right) & e_{t+1} = 0
+    \end{cases}
+\end{align*}
+
+Thus, writing $w'(w) = pw + \dfrac{1 - p}{2}$, the belief update equation becomes
+
+\begin{align*}
+    \mathcal{P}_W^{t + 1}(w) = \dfrac{\mathcal{P}_W^t(w)(e_{t+1} - (-1)^{e_{t+1}}w'(w))}{\int_\Omega\mathcal{P}_W^t(\lambda)(e_{t+1} - (-1)^{e_{t+1}}w'(\lambda))\dd\lambda}
+\end{align*}
+
+Thus, as in the case of classical Thompson sampling, we observe that
+\begin{align*}
+    \mathcal{P}_W^t(w) &= \begin{cases}
+        \mathcal{N}\mathcal{B}_{s_t+1,f_t+1}\left(pw + \tfrac{1-p}{2}\right) & w\in[0,1] \\
+        0 & \text{otherwise}
+    \end{cases}
+\end{align*}
+where $\mathcal{N}$ is the normalising factor.
+
+% XXX the following is probably wrong
+For arm $a$ we obtain estimate
+\begin{align*}
+    \hat{p}_t^a = \text{clamp}_{[0,1]}\left(\dfrac{1}{2} + \dfrac{2x_t^a - 1}{2p}\right)
+\end{align*}
+where $\boxed{x_t^a\text{ is sampled from }\mathcal{B}_{s_t^a+1,f_t^a+1}}$, and thus the arm that should be pulled at time $t$ is
+\begin{align*}
+    a_t &= \argmax_a\left(\text{clamp}_{[0,1]}\left(\dfrac{1}{2} + \dfrac{2x_t^a - 1}{2p}\right)\right) \\
+    \Aboxed{a_t &= \argmax_a (x_t^a)}
+\end{align*}
+
+Thus the algorithm is identical to classical Thompson sampling.

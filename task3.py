@@ -37,12 +37,8 @@ class FaultyBanditsAlgo:
         # END EDITING HERE
 
     def give_pull(self):
-        # START EDITING HERE
         return np.argmax(np.random.beta(self.successes_p_1, self.failures_p_1))
-        # END EDITING HERE
 
     def get_reward(self, arm_index, reward):
-        # START EDITING HERE
         self.successes_p_1[arm_index] += reward
         self.failures_p_1[arm_index] += 1 - reward
-        # END EDITING HERE

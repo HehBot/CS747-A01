@@ -1,0 +1,108 @@
+\section{Task 1: Sampling Algorithms}
+
+\subsection{UCB (deterministic)}
+At the beginning, $\boxed{u_0^a = \hat{p}_0^a = 0}$\footnote{The start value, $\hat{p}_0^a$, does not matter since $u_0^a = 0$}
+
+At time $t$, the UCB algorithm pulls the arm
+\begin{align*}
+    \Aboxed{a_t = {\begin{cases}
+        t & t < n \\
+        \argmax_{a} \left(\hat{p}_t^a + \sqrt{\dfrac{2\ln(t)}{u_t^a}}\right) & t \geq n
+    \end{cases}}}
+\end{align*}
+and updates
+\begin{align*}
+    \Aboxed{u_{t + 1}^a &= u_t^a + {\begin{cases}
+        0 & a \neq a_t\\
+        1 & a = a_t
+    \end{cases}}} \\
+    s_{t + 1}^a &= s_t^a + \begin{cases}
+        0 & a \neq a_t \\
+        r_t & a = a_t
+    \end{cases} \\
+    f_{t + 1}^a &= f_t^a + \begin{cases}
+        0 & a \neq a_t \\
+        1 - r_t & a = a_t
+    \end{cases}
+\end{align*}
+
+Using the above, we obtain the update equation for the estimates as
+\begin{align*}
+    \hat{p}_{t + 1}^{a_t} &= \dfrac{s_{t + 1}^a}{u_{t + 1}^{a_t}} = \dfrac{s_t^{a_t} + r_t}{u_t^{a_t} + 1} \\
+    \Aboxed{\hat{p}_{t + 1}^a &= {\begin{cases}
+        \hat{p}_t^a & a \neq a_t \\
+        \dfrac{u_t^a\hat{p}_t^a + r_t}{u_t^a + 1} & a = a_t
+    \end{cases}}}
+\end{align*}
+
+Thus by keeping track of $u_t^a$ and $\hat{p}_t^a$ for each arm $a$ we can implement UCB. The above update equations are implemented verbatim in the class \lstinline{UCB} (with \lstinline{self.counts} for $u_t$ and \lstinline{self.values} for $\hat{p}_t$).
+
+\begin{figure}[h]
+    \caption{Regret vs Horizon (note the different y-axis scales)}
+    \begin{subfigure}[b]{0.5\textwidth}
+        \centering
+        \includesvg[width=\textwidth]{task1-UCB.svg}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.5\textwidth}
+        \centering
+        \includesvg[width=\textwidth]{task1-KL_UCB.svg}
+    \end{subfigure} \\
+    \begin{subfigure}[b]{0.5\textwidth}
+        \centering
+        \includesvg[width=\textwidth]{task1-Eps_Greedy.svg}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.5\textwidth}
+        \centering
+        \includesvg[width=\textwidth]{task1-Thompson_Sampling.svg}
+    \end{subfigure}
+\end{figure}
+
+\subsection{KL-UCB (deterministic)}
+For $p\in[0,1], q\in(0,1)$, we have the Kullback-Leibler divergence of binomial distributions
+\begin{align*}
+    \text{KL}(p, q) = \begin{cases}
+        -\ln(1 - q) & p = 0 \\
+        p\ln(\dfrac{p}{q}) + (1 - p)\ln(\dfrac{1 - p}{1 - q}) & 0 < p < 1 \\
+        -\ln(q) & p = 1
+    \end{cases}
+\end{align*}
+
+The KL-UCB algorithm uses the same update equations as the UCB algorithm and differs in arm selection. At time $t$, the KL-UCB algorithm pulls the arm
+\begin{align*}
+    \Aboxed{a_t = {\begin{cases}
+        t & t < n \\
+        \argmax_{a} \text{KLi}_{\hat{p}_t^a}\left(\dfrac{\ln(t) + c\ln(\ln(t))}{u_t^a}\right) & t \geq n
+    \end{cases}}}
+\end{align*}
+
+where for $p\in[0,1), z\in\mathbb{R}_0^+$, $\text{KLi}_p(z)\in[p, 1)$ and satisfies $\text{KL}(p, \text{KLi}_p(z)) = z$. It is well-defined as $\text{KL}(p,.)$ is convex, continuous and unbounded with a minimum of 0 at $p$.
+
+$\text{KLi}$ does not have a closed form and thus has to be estimated; we use binary search in $[p, 1)$ for this purpose.
+
+\begin{lstlisting}[language=python]
+def KLi(p, z):
+    s_e = 1e-4 # stopping width
+    r = 1
+    l = p
+    while (r - l) > s_e:
+        v = KL(p, (l + r) / 2) - z
+        if v > 0:
+            r = (l + r) / 2
+        else:
+            l = (l + r) / 2
+    return l
+\end{lstlisting}
+
+In order to speed up computation we use the vectorized version of the above
+\begin{lstlisting}[language=python]
+np_KLi = np.vectorize(KLi)
+\end{lstlisting}
+
+\subsection{Thompson Sampling (randomised)}
+In Thompson sampling, the arm to pull at time $t$ is chosen as
+\begin{align*}
+    a_t = \argmax_{a} x_t^a
+\end{align*}
+where $x_t^a$ is sampled from the Beta distribution $\mathcal{B}(s_t^a + 1, f_t^a + 1)$
+
+Thus by keeping track of $s_t^a$ and $f_t^a$ for each arm $a$ we can implement Thompson sampling. The above update equations are implemented verbatim in the class \lstinline{Thompson_Sampling} (with \lstinline{self.successes_p_1} storing $s_t^a + 1$  and \lstinline{self.failures_p_1} storing $f_t^a + 1$ for each arm $a$) using \lstinline{np.random.beta} for vectorized sampling.

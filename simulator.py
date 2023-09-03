@@ -116,12 +116,12 @@ def task1(algorithm, probs, num_sims=50):
         regrets.append(simulate(algorithm, probs, horizon, num_sims))
 
     print(regrets)
-    plt.plot(horizons, regrets)
-    plt.title("Regret vs Horizon")
-    plt.savefig(
-        "task1-{}-{}.png".format(algorithm.__name__, time.strftime("%Y%m%d-%H%M%S"))
-    )
-    plt.clf()
+    fig, ax = plt.subplots()
+    ax.plot(horizons, regrets)
+    ax.set_xlabel("$T$")
+    ax.set_ylabel("$R_T$")
+    ax.set_title(r"$R_T$ vs $T$ for " + algorithm.__name__)
+    fig.savefig("task1-{}.svg".format(algorithm.__name__), format="svg")
 
 
 def task3(algorithm, probs, fault, num_sims=50):
@@ -163,8 +163,8 @@ if __name__ == "__main__":
     # Note - all the results generated for task 3 shall use a fault
     # probability of 0.2
 
-    # task3probs = [i/20 for i in range(20)]
-    # fault = 0.2
+    task3probs = [i / 20 for i in range(20)]
+    fault = 0.2
     # task3(FaultyBanditsAlgo, task3probs, fault)
     # TASK 3 ENDS HERE
 
@@ -173,9 +173,51 @@ if __name__ == "__main__":
     # bandit instance:
     # 2 bandits having 20 arms with uniformly distributed means
 
-    # task4probs = [[0.15, 0.05, 0.5, 0.6, 0.35, 0.85, 0.75, 0.3, 0.1,
-    # 0.45, 0.0, 0.55, 0.9, 0.2, 0.8, 0.65, 0.95, 0.4, 0.7, 0.25], [0.3,
-    # 0.55, 0.5, 0.0, 0.2, 0.25, 0.95, 0.1, 0.8, 0.6, 0.05, 0.45, 0.7,
-    # 0.65, 0.35, 0.4, 0.15, 0.85, 0.75, 0.9]]
+    task4probs = [
+        [
+            0.15,
+            0.05,
+            0.5,
+            0.6,
+            0.35,
+            0.85,
+            0.75,
+            0.3,
+            0.1,
+            0.45,
+            0.0,
+            0.55,
+            0.9,
+            0.2,
+            0.8,
+            0.65,
+            0.95,
+            0.4,
+            0.7,
+            0.25,
+        ],
+        [
+            0.3,
+            0.55,
+            0.5,
+            0.0,
+            0.2,
+            0.25,
+            0.95,
+            0.1,
+            0.8,
+            0.6,
+            0.05,
+            0.45,
+            0.7,
+            0.65,
+            0.35,
+            0.4,
+            0.15,
+            0.85,
+            0.75,
+            0.9,
+        ],
+    ]
     # task4(MultiBanditsAlgo, task4probs)
     # TASK 4 ENDS HERE

@@ -1,0 +1,18 @@
+\begin{table}
+\centering
+\caption*{Notation}
+\begin{tabular}{lll}
+    $n$ & number of arms & \\
+    $a$ & an arm $\in\{1,2,\ldots n\}$ ($*$ denotes any optimal arm) & \\
+    $p^a$ & expected reward of arm $a$ & \\
+    $T$ & horizon & \\
+    $R_t$ & regret until time $t$ & $R_t = tp^* - \sum\limits_0^{t - 1} p^{a_t}$ \\
+    $t$ & time $\in\{0,1,\ldots (T-1)\}$ & \\
+    $z_t^a$ & indicator with value 1 if arm $a$ was pulled at time $t$ and 0 otherwise & \\
+    $u_t^a$ & \# pulls of arm $a$ until time $t$ & $u_t^a = \sum\limits_{i=0}^{t-1}z_t^a$ \\
+    $r_t$ & r.v. denoting reward at time $t$ & \\
+    $s_t^a$ & \# successful pulls of arm $a$ until time $t$ & $s_t^a = \sum\limits_{i=0}^{t-1}z_t^ar_t$ \\
+    $f_t^a$ & \# failed pulls of arm $a$ until time $t$ & $f_t^a = u_t^a - s_t^a$ \\
+    $\hat{p}_t^a$ & estimated expected reward of arm $a$ at time $t$ & $\hat{p}_t^a = \dfrac{s_t^a}{u_t^a}$
+\end{tabular}
+\end{table}

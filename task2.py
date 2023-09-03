@@ -1,17 +1,7 @@
-"""
-You need to write code to plot the graphs as required in task2 of the problem statement:
-    - You can edit any code in this file but be careful when modifying the simulation specific code.
-    - The simulation framework as well as the BernoulliBandit implementation for this task have been separated from the rest of the assignment code and is contained solely in this file. This will be useful in case you would like to collect more information from runs rather than just regret.
-"""
-
 import numpy as np
 from multiprocessing import Pool
 from task1 import Eps_Greedy, UCB, KL_UCB
 import matplotlib.pyplot as plt
-
-# START EDITING HERE
-# You can use this space to define any helper functions that you need.
-# END EDITING HERE
 
 
 class BernoulliArmTask2:
@@ -92,10 +82,10 @@ if __name__ == "__main__":
     regrets = task2(UCB, 30000, task2p1s, task2p2s)
     fig, ax = plt.subplots()
     ax.set_xlabel(r"$p_2$")
-    ax.set_ylabel("Regret")
+    ax.set_ylabel(r"$R_T$")
     ax.plot(task2p2s, regrets, color="blue", label="UCB")
     ax.legend()
-    ax.set_title("Task 2A")
+    ax.set_title(r"Two-armed bandit with $p_1=0.9$ and $T=30000$")
     fig.savefig("task2A.svg", format="svg")
 
     # part B
@@ -105,9 +95,9 @@ if __name__ == "__main__":
     regrets_KL_UCB = task2(KL_UCB, 30000, task2p1s, task2p2s)
     fig, ax = plt.subplots()
     ax.set_xlabel(r"$p_2$")
-    ax.set_ylabel("Regret")
+    ax.set_ylabel(r"$R_T$")
     ax.plot(task2p2s, regrets_UCB, color="blue", label="UCB")
-    ax.plot(task2p2s, regrets_KL_UCB, color="red", label="KL UCB")
+    ax.plot(task2p2s, regrets_KL_UCB, color="red", label="KL-UCB")
     ax.legend()
-    ax.set_title("Task 2B")
+    ax.set_title(r"Two-armed bandit with $p_1 = p_2 + 0.1$ and $T=30000$")
     fig.savefig("task2B.svg", format="svg")
