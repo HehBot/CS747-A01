@@ -20,24 +20,37 @@ This file contains the FaultyBanditsAlgo class. Here are the method details:
 
 import numpy as np
 
+
 # START EDITING HERE
 # You can use this space to define any helper functions that you need
+def beta_trunc(alpha, beta, l, u):
+    x = np.random.beta(alpha, beta)
+    while x < l or x > u:
+        x = np.random.beta(alpha, beta)
+    return x
+
+
+beta_trunc_vectorized = np.vectorize(beta_trunc, excluded=["l", "u"])
 # END EDITING HERE
 
 
 class FaultyBanditsAlgo:
     def __init__(self, num_arms, horizon, fault):
-        # You can add any other variables you need here
         self.num_arms = num_arms
         self.horizon = horizon
         self.fault = fault  # probability that the bandit returns a faulty pull
-        # START EDITING HERE
         self.successes_p_1 = np.ones(num_arms)
         self.failures_p_1 = np.ones(num_arms)
-        # END EDITING HERE
 
     def give_pull(self):
-        return np.argmax(np.random.beta(self.successes_p_1, self.failures_p_1))
+        return np.argmax(
+            beta_trunc_vectorized(
+                self.successes_p_1,
+                self.failures_p_1,
+                self.fault / 2,
+                1 - (self.fault / 2),
+            )
+        )
 
     def get_reward(self, arm_index, reward):
         self.successes_p_1[arm_index] += reward

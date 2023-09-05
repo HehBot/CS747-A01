@@ -23,26 +23,25 @@ This file contains the MultiBanditsAlgo class. Here are the method details:
 
 import numpy as np
 
-# START EDITING HERE
-# You can use this space to define any helper functions that you need
-# END EDITING HERE
-
 
 class MultiBanditsAlgo:
     def __init__(self, num_arms, horizon):
-        # You can add any other variables you need here
         self.num_arms = num_arms
         self.horizon = horizon
-        # START EDITING HERE
-
-        # END EDITING HERE
+        self.num_sets = 2
+        self.successes_p_1 = [None] * self.num_sets
+        self.failures_p_1 = [None] * self.num_sets
+        for i in range(self.num_sets):
+            self.successes_p_1[i] = np.ones(num_arms)
+            self.failures_p_1[i] = np.ones(num_arms)
 
     def give_pull(self):
-        # START EDITING HERE
-        raise NotImplementedError
-        # END EDITING HERE
+        p_expected = np.zeros(self.num_arms)
+        for i in range(self.num_sets):
+            p_expected += np.random.beta(self.successes_p_1[i], self.failures_p_1[i])
+        p_expected /= self.num_sets
+        return np.argmax(p_expected)
 
     def get_reward(self, arm_index, set_pulled, reward):
-        # START EDITING HERE
-        raise NotImplementedError
-        # END EDITING HERE
+        self.successes_p_1[set_pulled][arm_index] += reward
+        self.failures_p_1[set_pulled][arm_index] += 1 - reward

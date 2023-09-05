@@ -1,59 +1,10 @@
 \section*{Task 4}
 
-For r.v. $W$ (taking values in $\Omega$) that represents the environment, we have the generalised belief update equation
-\begin{align*}
-    \mathcal{P}_W^{t + 1}(w) = \dfrac{\mathcal{P}_W^{t}(w)\mathbb{P}(e_{t+1} | w)}{\int_\Omega\mathcal{P}_W^{t}(\lambda)\mathbb{P}(e_{t+1} | \lambda)\dd\lambda}
-\end{align*}
+On every reward we are told which set of arms was pulled. Thus our beliefs for expected reward for both sets of arms will be independent and can be estimated via Thompson sampling.
 
-In this case, the environment is the pair of (unknown) expected rewards of a corresponding pair of arms and $\Omega=[0,1]^2$. Writing $w = (x,y)$ and $W=(X,Y)$, we have
-\begin{align*}
-    \mathbb{P}(e_{t + 1} | x, y) &= \begin{cases}
-        \tfrac{x + y}{2} & e_{t+1} = 1 \\
-        1 - \tfrac{x + y}{2} & e_{t+1} = 0
-    \end{cases}
-\end{align*}
 
-Thus the belief update equation becomes
-
+Thus
 \begin{align*}
-    \mathcal{P}_{X,Y}^{t + 1}(x, y) = \dfrac{\mathcal{P}_{X,Y}^t(x,y)\left(e_{t+1} - (-1)^{e_{t+1}}\left(\tfrac{x + y}{2}\right)\right)}{\iint\limits_{[0,1]^2}\mathcal{P}_{X,Y}^t(\lambda,\theta)\left(e_{t+1} - (-1)^{e_{t+1}}\left(\tfrac{\lambda + \theta}{2}\right)\right)\dd(\lambda,\theta)}
+    \boxed{a_t = \argmax_a \left(\dfrac{x_t^{a,1} + x_t^{a,2}}{2}\right)}
 \end{align*}
-
-Thus, as in the case of classical Thompson sampling, we observe that
-\begin{align*}
-    \mathcal{P}_{X,Y}^t(x,y) &= \begin{cases}
-        \mathcal{N}\mathcal{B}_{s_t+1,f_t+1}\left(\tfrac{x+y}{2}\right) & (x,y)\in[0,1]^2 \\
-        0 & \text{otherwise}
-    \end{cases}
-\end{align*}
-where $\mathcal{N}$ is the normalising factor and $s_t,f_t$ are numbe of success and failures for the pair of arms combined. Now we require the distribution of the random variable $Z=\tfrac{X+Y}{2}$, the expected reward when we try to pull this pair of arms. The cumulative distribution function will be
-\begin{align*}
-    f_Z(z) &= \mathbb{P}(Z \leq z) \\
-    &= \iint\limits_{\left\{(x,y)\in[0,1]^2\middle|x+y\leq 2z\right\}}\mathcal{P}_{X,Y}^t(\lambda,\theta)\dd(\lambda,\theta) \\
-    &= \begin{cases}
-        0 & z < 0 \\
-        \int\limits_0^{2z}\int\limits_0^{2z - \lambda}\mathcal{P}_{X,Y}^t(\lambda,\theta)\dd\theta\dd\lambda & 0 \leq z < \tfrac{1}{2} \\
-        1 - \int\limits_{2z-1}^1\int\limits_{2z-\lambda}^1\mathcal{P}_{X,Y}^t(\lambda,\theta)\dd\theta\dd\lambda & \tfrac{1}{2} \leq z < 1 \\
-    1 & 1 \leq z
-    \end{cases}
-\end{align*}
-
-Finally, using Leibnizs' rule for differntiating integrals, we get the PDF of $Z$ as
-\begin{align*}
-    \mathcal{P}_Z(z) &= \dv{}{z}f_Z(z) \\
-    &= \begin{cases}
-        \int\limits_0^{2z}2\mathcal{P}_{X,Y}^t(\lambda,2z-\lambda)\dd\lambda + 2\int\limits_0^{2z - 2z}\mathcal{P}_{X,Y}^t(2z,\theta)\dd\theta & 0 < z < \tfrac{1}{2} \\
-        -\int\limits_{2z-1}^1(-2)\mathcal{P}_{X,Y}^t(\lambda,2z-\lambda)\dd\lambda - (-2)\int\limits_1^1\mathcal{P}_{X,Y}^t(2z-1,\theta)\dd\theta & \tfrac{1}{2} \leq z < 1 \\
-        0 & \text{otherwise}
-    \end{cases} \\
-    &= \begin{cases}
-        2\int\limits_0^{2z}\mathcal{N}\mathcal{B}_{s_t+1,f_t+1}^t(z)\dd\lambda & 0 < z < \tfrac{1}{2} \\
-        2\int\limits_{2z-1}^1\mathcal{N}\mathcal{B}_{s_t+1,f_t+1}^t(z)\dd\lambda & \tfrac{1}{2} \leq z < 1 \\
-        0 & \text{otherwise}
-    \end{cases} \\
-    \Aboxed{\mathcal{P}_Z(z) &= 4\mathcal{N}{\begin{cases}
-        z\mathcal{B}_{s_t+1,f_t+1}^t(z) & 0 < z < \tfrac{1}{2} \\
-        (1 - z)\mathcal{B}_{s_t+1,f_t+1}^t(z) & \tfrac{1}{2} \leq z < 1 \\
-        0 & \text{otherwise}
-    \end{cases}}}
-\end{align*}
+where $\boxed{x_t^{a,i}\text{ is sampled from }\mathcal{B}(s_t^{a,i} + 1, f_t^{a,i} + 1)}$, the beta distribution for arm $a$ of set $i$.
