@@ -19,7 +19,7 @@ Let $p$ denote fault probability. In this case, $W$ is the (unknown) expected no
 Thus, writing $w'(w) = (1-p)w + \tfrac{p}{2}$, the belief update equation becomes
 
 \begin{align*}
-    \mathcal{P}_W^{t + 1}(w) = \dfrac{\mathcal{P}_W^t(w)(e_{t+1} - (-1)^{e_{t+1}}w'(w))}{\int_\Omega\mathcal{P}_W^t(\lambda)(e_{t+1} - (-1)^{e_{t+1}}w'(\lambda))\dd\lambda}
+    \mathcal{P}_W^{t + 1}(w) = \dfrac{\mathcal{P}_W^t(w)(1 - e_{t+1} + (-1)^{1 - e_{t+1}}w'(w))}{\int_\Omega\mathcal{P}_W^t(\lambda)(1 - e_{t+1} + (-1)^{1 - e_{t+1}}w'(\lambda))\dd\lambda}
 \end{align*}
 
 Thus, as in the case of classical Thompson sampling, we observe that

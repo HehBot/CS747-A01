@@ -56,11 +56,9 @@ class Eps_Greedy(Algorithm):
             return np.argmax(self.values)
 
     def get_reward(self, arm_index, reward):
-        self.counts[arm_index] += 1
         n = self.counts[arm_index]
-        value = self.values[arm_index]
-        new_value = ((n - 1) / n) * value + (1 / n) * reward
-        self.values[arm_index] = new_value
+        self.values[arm_index] = (n * self.values[arm_index] + reward) / (n + 1)
+        self.counts[arm_index] = n + 1
 
 
 def KL(p, q):
@@ -71,7 +69,7 @@ def KL(p, q):
     return p * math.log(p / q) + (1 - p) * math.log((1 - p) / (1 - q))
 
 
-def KLi_BS(p, z):
+def KLi(p, z):
     """
     returns q in [p, 1) st
         KL(p, q) = z
@@ -81,15 +79,15 @@ def KLi_BS(p, z):
     r = 1
     l = p
     while (r - l) > cutoff:
-        v = KL(p, (l + r) / 2) - z
-        if v > 0:
-            r = (l + r) / 2
+        m = (l + r) / 2
+        if KL(p, m) > z:
+            r = m
         else:
-            l = (l + r) / 2
+            l = m
     return l
 
 
-np_KLi = np.vectorize(KLi_BS)
+np_KLi = np.vectorize(KLi)
 
 
 class UCB(Algorithm):
@@ -108,12 +106,10 @@ class UCB(Algorithm):
             )
 
     def get_reward(self, arm_index, reward):
-        self.counts[arm_index] += 1
-        self.time += 1
         n = self.counts[arm_index]
-        value = self.values[arm_index]
-        new_value = ((n - 1) / n) * value + (1 / n) * reward
-        self.values[arm_index] = new_value
+        self.time += 1
+        self.values[arm_index] = (n * self.values[arm_index] + reward) / (n + 1)
+        self.counts[arm_index] = n + 1
 
 
 class KL_UCB(Algorithm):
@@ -133,12 +129,10 @@ class KL_UCB(Algorithm):
             return np.argmax(np_KLi(self.values, l / self.counts))
 
     def get_reward(self, arm_index, reward):
-        self.counts[arm_index] += 1
-        self.time += 1
         n = self.counts[arm_index]
-        value = self.values[arm_index]
-        new_value = ((n - 1) / n) * value + (1 / n) * reward
-        self.values[arm_index] = new_value
+        self.time += 1
+        self.values[arm_index] = (n * self.values[arm_index] + reward) / (n + 1)
+        self.counts[arm_index] = n + 1
 
 
 class Thompson_Sampling(Algorithm):

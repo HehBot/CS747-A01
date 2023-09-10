@@ -153,10 +153,10 @@ if __name__ == "__main__":
     # 20 arms with uniformly distributed means
 
     task1probs = [i / 20 for i in range(20)]
-    # task1(Eps_Greedy, task1probs, 1)
-    # task1(UCB, task1probs)
-    # task1(KL_UCB, task1probs)
-    # task1(Thompson_Sampling, task1probs)
+    task1(Eps_Greedy, task1probs, 1)
+    task1(UCB, task1probs)
+    task1(KL_UCB, task1probs)
+    task1(Thompson_Sampling, task1probs)
     # TASK 1 ENDS HERE
 
     # TASK 3 STARTS HERE
@@ -165,7 +165,7 @@ if __name__ == "__main__":
 
     task3probs = [i / 20 for i in range(20)]
     fault = 0.2
-    # task3(FaultyBanditsAlgo, task3probs, fault)
+    task3(FaultyBanditsAlgo, task3probs, fault)
     # TASK 3 ENDS HERE
 
     # TASK 4 STARTS HERE
@@ -219,5 +219,5 @@ if __name__ == "__main__":
             0.9,
         ],
     ]
-    # task4(MultiBanditsAlgo, task4probs)
+    task4(MultiBanditsAlgo, task4probs)
     # TASK 4 ENDS HERE

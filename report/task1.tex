@@ -38,7 +38,7 @@ Using the above, we obtain the update equation for the estimates as
 Thus by keeping track of $u_t^a$ and $\hat{p}_t^a$ for each arm $a$ we can implement UCB. The above update equations are implemented verbatim in the class \lstinline{UCB} (with \lstinline{self.counts} for $u_t$ and \lstinline{self.values} for $\hat{p}_t$).
 
 \begin{figure}[h]
-    \caption{Regret vs Horizon (note the different y-axis scales)}
+    \caption{Regret vs Horizon (note the different y-axis scales). Logarithmic regret is observed for UCB, KL-UCB and Thompson Sampling.}
     \begin{subfigure}[b]{0.5\textwidth}
         \centering
         \includesvg[width=\textwidth]{task1-UCB.svg}
@@ -75,18 +75,17 @@ The KL-UCB algorithm uses the same update equations as the UCB algorithm and dif
     \end{cases}}}
 \end{align*}
 
-where for $p\in[0,1), z\in\mathbb{R}_0^+$, $\text{KLi}_p(z)\in[p, 1)$ and satisfies $\text{KL}(p, \text{KLi}_p(z)) = z$. It is well-defined as $\text{KL}(p,.)$ is convex, continuous and unbounded with a minimum of 0 at $p$.
+where for $p\in[0,1), z\in\mathbb{R}_0^+$, $\text{KLi}_p(z)\in[p, 1)$ and satisfies $\text{KL}(p, \text{KLi}_p(z)) = z$. It is well-defined as in $[p, 1)$, $\text{KL}(p,.)$ is continuous, monotonic and unbounded above with a minimum of 0 at $p$.
 
 $\text{KLi}$ does not have a closed form and thus has to be estimated; we use binary search in $[p, 1)$ for this purpose.
 
 \begin{lstlisting}[language=python]
 def KLi(p, z):
-    s_e = 1e-4 # stopping width
+    cutoff = 1e-2   # stopping width
     r = 1
     l = p
-    while (r - l) > s_e:
-        v = KL(p, (l + r) / 2) - z
-        if v > 0:
+    while (r - l) > cutoff:
+        if KL(p, (l + r) / 2) > z:
             r = (l + r) / 2
         else:
             l = (l + r) / 2

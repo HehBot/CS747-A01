@@ -1,11 +1,45 @@
 \section*{Task 2}
-\begin{figure}
-    \begin{subfigure}{0.5\textwidth}
-        \centering
-        \includesvg[width=\textwidth]{task2A.svg}
-    \end{subfigure}
-    \begin{subfigure}{0.5\textwidth}
-        \centering
-        \includesvg[width=\textwidth]{task2B.svg}
-    \end{subfigure}
+\subsection*{Part A}
+\begin{figure}[h]
+    \centering
+    \includesvg[width=0.5\textwidth]{task2A.svg}
 \end{figure}
+
+We have for UCB
+\begin{align*}
+    \exists C > 0 \forall T: ~ R_T &\leq  C\left(\sum{}_{\substack{a\in A\\ p_a != p_*}}\dfrac{1}{p_* - p_a}\right)\ln(T) \\
+    R_T &\geq \left(\sum{}_{\substack{a\in A\\ p_a != p_*}}\dfrac{p_* - p_a}{\text{KL}(p_*, p_a)}\right)\ln(T)
+\end{align*}
+
+For two arms with $0.9 = p_1 > p_2$,\footnote{$C\geq 0.5$ as $\text{KL}(x,y)\geq 2(x-y)^2$}
+\begin{align*}
+    \exists C \geq 0.5: ~ \boxed{\dfrac{0.9 - p_2}{\text{KL}(0.9, p_2)} \leq \dfrac{R_T}{\ln(T)} \leq \dfrac{C}{0.9 - p_2}}
+\end{align*}
+while for two arms with $\boxed{p_1 = p_2, R_T = 0}$. Together these bounds explain the curve obtained.\footnote{See \url{https://www.desmos.com/calculator/y9bhljepp7}}
+
+For two arms with $p_1 = p_2$, $R_T = 0$ by definition. Thus the graph falls to zero at $p_2 = 0.9$.
+
+\subsection*{Part B}
+\begin{figure}[h]
+    \centering
+    \includesvg[width=0.5\textwidth]{task2B.svg}
+\end{figure}
+\subsubsection*{UCB}
+We have for UCB
+\begin{align*}
+    \lim_{t\rightarrow\infty} \left(\hat{p}_t^a + \sqrt{\dfrac{2\ln(t)}{u_t^a}}\right) &= p_* \\
+    \lim_{t\rightarrow\infty} \hat{p}_t^a &= p_a
+\end{align*}
+where the latter is because UCB satisfies Infinite Exploration. Thus we get
+\begin{align*}
+    \lim_{t\rightarrow\infty}\sqrt{\dfrac{2\ln(t)}{u_t^a}} &= p_* - p_a
+\end{align*}
+We also have regret
+\begin{align*}
+    R_t &= \sum_{a=1}^A u_t^a(p_* - p_a) \\
+    \lim_{t\rightarrow\infty} \dfrac{R_t}{\ln(t)} &= \sum_{a=1}^A (p_* - p_a) \left(\lim_{t\rightarrow\infty}\dfrac{u_t^a}{\ln(t)}\right) \\
+    \Aboxed{\lim_{t\rightarrow\infty} \dfrac{R_t}{\ln(t)} &= \sum_{a=1}^A \dfrac{2}{\Delta_a}}
+\end{align*}
+Thus we would expect $R_T$ to be approximately uniform wrt $p_2$ when $p_1 = p_2 + 0.1$.
+\subsubsection*{KL-UCB}
+We know that KL-UCB touches the lower bound for bandit algorithms asymptotically in infinite horizon. Thus we would expect regret to peak around the middle and taper off at the ends, which we do observe.

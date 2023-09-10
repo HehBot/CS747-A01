@@ -1,6 +1,6 @@
 import numpy as np
 from multiprocessing import Pool
-from task1 import Eps_Greedy, UCB, KL_UCB
+from task1 import Eps_Greedy, UCB, KL_UCB, KL
 import matplotlib.pyplot as plt
 
 
@@ -89,15 +89,16 @@ if __name__ == "__main__":
     fig.savefig("task2A.svg", format="svg")
 
     # part B
-    task2p1s = [0.1 + 0.05 * i for i in range(19)]
-    task2p2s = [0.05 * i for i in range(19)]
-    regrets_UCB = task2(UCB, 30000, task2p1s, task2p2s)
-    regrets_KL_UCB = task2(KL_UCB, 30000, task2p1s, task2p2s)
+    T = 30000
+    task2p2s = np.array([0.05 * i for i in range(19)])
+    task2p1s = 0.1 + task2p2s
+    regrets_UCB = task2(UCB, T, task2p1s, task2p2s)
+    regrets_KL_UCB = task2(KL_UCB, T, task2p1s, task2p2s)
     fig, ax = plt.subplots()
     ax.set_xlabel(r"$p_2$")
     ax.set_ylabel(r"$R_T$")
     ax.plot(task2p2s, regrets_UCB, color="blue", label="UCB")
     ax.plot(task2p2s, regrets_KL_UCB, color="red", label="KL-UCB")
     ax.legend()
-    ax.set_title(r"Two-armed bandit with $p_1 = p_2 + 0.1$ and $T=30000$")
+    ax.set_title(r"Two-armed bandit with $p_1 = p_2 + 0.1$ and $T={}$".format(T))
     fig.savefig("task2B.svg", format="svg")
